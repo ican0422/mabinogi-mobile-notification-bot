@@ -15,20 +15,26 @@ const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('
 
 for (const file of commandFiles) {
     const command = await import(`file://${path.join(commandsPath, file)}`);
-    commands.push(command.data.toJSON());
+    if (command.data && typeof command.data.toJSON === 'function') {
+        commands.push(command.data.toJSON());
+        console.log(`✅ 명령어 로드 성공: ${command.data.name}`);
+    } else {
+        console.warn(`⚠️ 명령어 로드 실패 (toJSON 메서드 없음): ${file}`);
+    }
 }
-
-const rest = new REST({ version: '10' }).setToken(process.env.DISCORD_TOKEN);
 
 client.once('ready', async () => {
     try {
         console.log('🔄 명령어 등록 중...');
-        
+
+        const rest = new REST({ version: '10' }).setToken(process.env.DISCORD_TOKEN);
+        const applicationId = client.user.id;
+
         const guilds = client.guilds.cache.map(guild => guild.id);
-        
+
         for (const guildId of guilds) {
             await rest.put(
-                Routes.applicationGuildCommands(client.user.id, guildId),
+                Routes.applicationGuildCommands(applicationId, guildId),
                 { body: commands }
             );
             console.log(`✅ 명령어가 성공적으로 ${guildId} 서버에 등록되었습니다.`);
@@ -42,4 +48,5 @@ client.once('ready', async () => {
     }
 });
 
+// 봇 로그인
 client.login(process.env.DISCORD_TOKEN);

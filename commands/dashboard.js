@@ -2,26 +2,25 @@ import { SlashCommandBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } fro
 
 export const data = new SlashCommandBuilder()
     .setName('대시보드')
-    .setDescription('대시보드 설정 메뉴를 엽니다.');
+    .setDescription('알림 설정을 시작합니다.');
 
 export async function execute(interaction) {
     const row = new ActionRowBuilder().addComponents(
         new ButtonBuilder()
-            .setCustomId('select_notification_channel')
-            .setLabel('알림 채널 선택')
-            .setStyle(ButtonStyle.Primary),
-        new ButtonBuilder()
-            .setCustomId('select_notification_role')
-            .setLabel('알림 역할 선택')
-            .setStyle(ButtonStyle.Secondary)
+            .setCustomId('알림설정')  // 여기 수정
+            .setLabel('설정')
+            .setStyle(ButtonStyle.Primary)
     );
 
+    // 기존 메시지를 수정하는 방식
     const message = await interaction.reply({
         content: '🔧 대시보드 설정 메뉴',
         components: [row],
-        fetchReply: true
+        flags: 0  // 비공개 메시지가 아닌 일반 메시지
     });
 
-    // 메시지 ID를 캐시에 저장
+    // 메시지 ID 저장
     interaction.client.dashboardMessageId = message.id;
+
+    console.log('✅ 대시보드 메시지 전송 성공:', message.id);
 }
