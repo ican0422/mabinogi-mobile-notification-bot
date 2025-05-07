@@ -2,6 +2,11 @@ import 'dotenv/config';
 import { Client, GatewayIntentBits, Collection, Events } from 'discord.js';
 import fs from 'fs';
 import path from 'path';
+import { fileURLToPath } from 'url';
+
+// __dirname을 에뮬레이션
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const client = new Client({
     intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent],
@@ -31,7 +36,7 @@ client.on(Events.InteractionCreate, async interaction => {
         await command.execute(interaction);
     } catch (error) {
         console.error(error);
-        await interaction.reply({ content: '⚠️ 명령어 실행 중 오류가 발생했습니다.', ephemeral: true });
+        await interaction.reply({ content: '⚠️ 명령어 실행 중 오류가 발생했습니다.', flags: MessageFlags.Ephemeral });
     }
 });
 
