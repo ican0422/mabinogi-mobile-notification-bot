@@ -16,9 +16,12 @@ export async function execute(interaction) {
             .setStyle(ButtonStyle.Secondary)
     );
 
-    await interaction.reply({
+    const message = await interaction.reply({
         content: '🔧 대시보드 설정 메뉴',
         components: [row],
-        flags: MessageFlags.Ephemeral
+        fetchReply: true
     });
+
+    // 메시지 ID를 캐시에 저장
+    interaction.client.dashboardMessageId = message.id;
 }
