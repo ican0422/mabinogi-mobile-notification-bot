@@ -26,7 +26,7 @@ const client = new Client({
 client.commands = new Collection();
 client.alertTimers = {};
 
-// 📂 명령어 파일 로딩
+// 명령어 파일 로딩
 const commandsPath = path.join(__dirname, 'commands');
 const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'));
 
@@ -39,15 +39,15 @@ for (const file of commandFiles) {
     }
 }
 
-// 🟢 봇 준비 완료 이벤트
+// 봇 준비 완료 이벤트
 client.once(Events.ClientReady, () => {
     console.log(`✅ 봇이 준비되었습니다 - ${client.user.tag}`);
 });
 
-// 📣 상호작용 이벤트 처리
+// 상호작용 이벤트 처리
 client.on(Events.InteractionCreate, async interaction => {
     try {
-        // 📝 슬래시 명령어 처리
+        // 슬래시 명령어 처리
         if (interaction.isChatInputCommand()) {
             const command = client.commands.get(interaction.commandName);
             if (command) {
@@ -56,7 +56,7 @@ client.on(Events.InteractionCreate, async interaction => {
             }
         }
 
-        // 🔘 버튼 상호작용 처리
+        // 버튼 상호작용 처리
         if (interaction.isButton()) {
             const { customId } = interaction;
             console.log(`🔘 버튼 눌림: ${customId}`);
@@ -100,7 +100,7 @@ client.on(Events.InteractionCreate, async interaction => {
             }
         }
 
-        // 📑 선택 메뉴 상호작용 처리
+        // 선택 메뉴 상호작용 처리
         if (interaction.isStringSelectMenu()) {
             const { customId, values } = interaction;
 
@@ -130,7 +130,7 @@ client.on(Events.InteractionCreate, async interaction => {
                     console.log(`🛑 기존 결계 알림 타이머 중지: ${selectedChannelId}`);
                 }
 
-                // 🕰️ 결계 알림 타이머 설정 (1분 간격 체크)
+                // 결계 알림 타이머 설정 (1분 간격 체크)
                 client.alertTimers[selectedChannelId] = setInterval(async () => {
                     try {
                         const now = new Date();
@@ -167,9 +167,9 @@ client.on(Events.InteractionCreate, async interaction => {
     }
 });
 
-// 🆕 이모지 반응 추가 및 제거 처리
+// 이모지 반응 추가 및 제거 처리
 client.on(Events.MessageReactionAdd, (reaction, user) => handleReaction(reaction, user, client, true));
 client.on(Events.MessageReactionRemove, (reaction, user) => handleReaction(reaction, user, client, false));
 
-// 🔑 봇 로그인
+// 봇 로그인
 client.login(process.env.DISCORD_TOKEN);

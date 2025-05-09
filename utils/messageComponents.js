@@ -1,6 +1,6 @@
 import { ActionRowBuilder, StringSelectMenuBuilder, ButtonBuilder, ButtonStyle } from 'discord.js';
 
-// ✅ 버튼 그룹 생성 함수 (가로 배치 지원)
+// 버튼 그룹 생성 함수 (가로 배치 지원)
 export function createButtonRow(buttonConfigs) {
     const row = new ActionRowBuilder();
     buttonConfigs.forEach(config => {
@@ -14,7 +14,7 @@ export function createButtonRow(buttonConfigs) {
     return row;
 }
 
-// 📑 채널 선택 메뉴 생성
+// 채널 선택 메뉴 생성
 export function createChannelSelectMenu(channels, customId, placeholder) {
     return new ActionRowBuilder().addComponents(
         new StringSelectMenuBuilder()
@@ -27,7 +27,7 @@ export function createChannelSelectMenu(channels, customId, placeholder) {
     );
 }
 
-// 📑 역할 선택 메뉴 생성
+// 역할 선택 메뉴 생성
 export function createRoleSelectMenu(roles, customId, placeholder) {
     return new ActionRowBuilder().addComponents(
         new StringSelectMenuBuilder()

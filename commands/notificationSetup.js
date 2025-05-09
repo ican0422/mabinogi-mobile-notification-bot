@@ -13,7 +13,7 @@ export async function execute(interaction) {
         const channelMenu = createChannelSelectMenu(channels, '알림_채널_선택', '🔔 알림을 보낼 채널을 선택하세요');
         const roleMenu = createRoleSelectMenu(roles, '알림_역할_선택', '👥 역할을 선택하세요');
         
-        // ✅ 버튼 그룹 생성 (가로 정렬)
+        // 버튼 그룹 생성 (가로 정렬)
         const buttonRow = createButtonRow([
             { customId: '알림_설정_완료', label: '설정 완료', style: ButtonStyle.Success }
         ]);
