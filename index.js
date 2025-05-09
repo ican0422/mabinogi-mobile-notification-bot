@@ -5,6 +5,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { sendAlertMessage } from './utils/sendReactionRoleMessage.js';
 import { createChannelSelectMenu, createRoleSelectMenu, createButtonRow } from './utils/messageComponents.js';
+import { handleReaction } from './utils/emojiRoleHandler.js';  // 이모지 로직 분리
 
 // __dirname 설정
 const __filename = fileURLToPath(import.meta.url);
@@ -166,37 +167,9 @@ client.on(Events.InteractionCreate, async interaction => {
     }
 });
 
-// 🆕 이모지 반응 추가 처리
-client.on(Events.MessageReactionAdd, async (reaction, user) => {
-    try {
-        const { message, emoji } = reaction;
-        const { reactionRoleMessageId, reactionRoleRoleId } = client;
-
-        if (message.id === reactionRoleMessageId && emoji.name === '▶️') {
-            const member = await message.guild.members.fetch(user.id);
-            await member.roles.add(reactionRoleRoleId);
-            console.log(`✅ 역할 부여 완료: ${user.username}`);
-        }
-    } catch (error) {
-        console.error('📛 역할 부여 중 오류 발생:', error);
-    }
-});
-
-// 🆕 이모지 반응 제거 처리
-client.on(Events.MessageReactionRemove, async (reaction, user) => {
-    try {
-        const { message, emoji } = reaction;
-        const { reactionRoleMessageId, reactionRoleRoleId } = client;
-
-        if (message.id === reactionRoleMessageId && emoji.name === '▶️') {
-            const member = await message.guild.members.fetch(user.id);
-            await member.roles.remove(reactionRoleRoleId);
-            console.log(`🗑️ 역할 제거 완료: ${user.username}`);
-        }
-    } catch (error) {
-        console.error('📛 역할 제거 중 오류 발생:', error);
-    }
-});
+// 🆕 이모지 반응 추가 및 제거 처리
+client.on(Events.MessageReactionAdd, (reaction, user) => handleReaction(reaction, user, client, true));
+client.on(Events.MessageReactionRemove, (reaction, user) => handleReaction(reaction, user, client, false));
 
 // 🔑 봇 로그인
 client.login(process.env.DISCORD_TOKEN);
