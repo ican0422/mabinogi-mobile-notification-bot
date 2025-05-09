@@ -1,4 +1,3 @@
-// commands/dashboard.js
 import { SlashCommandBuilder, ButtonStyle } from 'discord.js';
 import { createButtonRow } from '../utils/messageComponents.js';
 
