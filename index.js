@@ -4,7 +4,7 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { sendAlertMessage } from './utils/sendReactionRoleMessage.js';
-import { createChannelSelectMenu, createRoleSelectMenu, createButtonRow } from './utils/messageComponents.js';
+import { createChannelSelectMenu } from './utils/messageComponents.js';
 import { handleReaction } from './utils/emojiRoleHandler.js';  // 이모지 로직 분리
 
 // __dirname 설정
