@@ -18,6 +18,7 @@ export async function execute(interaction) {
             { customId: '알림_설정_완료', label: '설정 완료', style: ButtonStyle.Success }
         ]);
 
+        // 상호작용 응답
         await interaction.deferReply({ ephemeral: true });
 
         await interaction.editReply({

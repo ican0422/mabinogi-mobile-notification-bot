@@ -1,11 +1,12 @@
 import 'dotenv/config';
-import { Client, GatewayIntentBits, Collection, Events, ButtonStyle, MessageFlags } from 'discord.js';
+import { Client, GatewayIntentBits, Collection, Events, MessageFlags } from 'discord.js';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { sendAlertMessage } from './utils/sendReactionRoleMessage.js';
 import { createChannelSelectMenu } from './utils/messageComponents.js';
-import { handleReaction } from './utils/emojiRoleHandler.js';  // 이모지 로직 분리
+import { handleReaction } from './utils/emojiRoleHandler.js';
+import { startAlertTimer } from './utils/alertTimer.js';  // 분리된 알림 타이머
 
 // __dirname 설정
 const __filename = fileURLToPath(import.meta.url);
@@ -25,6 +26,9 @@ const client = new Client({
 
 client.commands = new Collection();
 client.alertTimers = {};
+client.currentAlertChannelId = null;
+client.selectedChannelId = null;
+client.selectedRoleId = null;
 
 // 명령어 파일 로딩
 const commandsPath = path.join(__dirname, 'commands');
@@ -103,62 +107,44 @@ client.on(Events.InteractionCreate, async interaction => {
         // 선택 메뉴 상호작용 처리
         if (interaction.isStringSelectMenu()) {
             const { customId, values } = interaction;
+            
+            // 알림 설정 (채널)
+            if (interaction.customId === '알림_채널_선택') {
+                // 클라이언트 전역으로 채널 ID 저장
+                client.selectedChannelId = interaction.values[0];
 
-            if (customId === '알림_채널_선택') {
-                client.selectedChannelId = values[0];
                 await interaction.reply({
-                    content: `📢 선택된 알림 채널: <#${values[0]}>`,
-                    flags: MessageFlags.Ephemeral
+                    content: `📢 선택된 알림 채널: <#${interaction.values[0]}>`,
+                    ephemeral: true
                 });
             }
 
-            if (customId === '알림_역할_선택') {
-                client.selectedRoleId = values[0];
+            // 알림 설정 (역할)
+            if (interaction.customId === '알림_역할_선택') {
+                // 클라이언트 전역으로 역할 ID 저장
+                client.selectedRoleId = interaction.values[0];
+
                 await interaction.reply({
-                    content: `👥 선택된 역할: <@&${values[0]}>`,
-                    flags: MessageFlags.Ephemeral
+                    content: `👥 선택된 역할: <@&${interaction.values[0]}>`,
+                    ephemeral: true
                 });
             }
 
+            // 결계 알림 채널 선택
             if (customId === '결계_알림_채널_선택') {
-                const selectedChannelId = values[0];
-                client.selectedAlertChannelId = selectedChannelId;
+                const selectedAlertChannelId = values[0];
+                client.selectedAlertChannelId = selectedAlertChannelId;
+                
+                // 결계 알림 타이머 시작 (코드 분리)
+                startAlertTimer(client, selectedAlertChannelId);
 
-                // 기존 타이머 정리
-                if (client.alertTimers[selectedChannelId]) {
-                    clearInterval(client.alertTimers[selectedChannelId]);
-                    console.log(`🛑 기존 결계 알림 타이머 중지: ${selectedChannelId}`);
-                }
-
-                // 결계 알림 타이머 설정 (1분 간격 체크)
-                client.alertTimers[selectedChannelId] = setInterval(async () => {
-                    try {
-                        const now = new Date();
-                        const hours = now.getHours();
-                        const minutes = now.getMinutes();
-                        const alertTimes = [23, 2, 5, 8, 11, 14, 17, 20];
-
-                        if (alertTimes.includes(hours) && minutes === 55) {
-                            const channel = await client.channels.fetch(selectedChannelId);
-                            if (channel.isTextBased()) {
-                                const nextHour = (hours + 1) % 24;
-                                const period = nextHour >= 12 ? 'PM' : 'AM';
-                                const displayHour = nextHour % 12 === 0 ? 12 : nextHour % 12;
-                                await channel.send(`🛡️ **결계 알림** - ${displayHour}:00 ${period}에 결계가 열립니다! 준비하세요.`);
-                                console.log(`✅ 결계 알림 전송: ${selectedChannelId} (${displayHour}:00 ${period})`);
-                            }
-                        }
-                    } catch (error) {
-                        console.error('📛 결계 알림 타이머 오류:', error);
-                    }
-                }, 60000);
-
-                await interaction.reply({
-                    content: `✅ 선택된 결계 알림 채널: <#${selectedChannelId}>`,
+                await interaction.update({
+                    content: `🛡️ 선택된 결계 알림 채널: <#${client.selectedAlertChannelId}>`,
+                    components: [],
                     flags: MessageFlags.Ephemeral
                 });
 
-                console.log(`✅ 결계 알림 채널 설정 완료: ${selectedChannelId}`);
+                console.log(`✅ 결계 알림 채널 설정 완료: ${client.selectedAlertChannelId}`);
             }
         }
 
