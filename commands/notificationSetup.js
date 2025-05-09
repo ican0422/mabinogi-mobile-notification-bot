@@ -13,42 +13,29 @@ export async function execute(interaction) {
             value: channel.id
         }));
 
-        // 2️⃣ 알림 종류 선택 메뉴
-        const notificationTypes = [
-            { label: '결계 알림', value: '결계' },
-            { label: '보스 알림', value: '보스' },
-        ];
-
-        // 3️⃣ 역할 선택 메뉴
+        // 2️⃣ 역할 선택 메뉴
         const roles = interaction.guild.roles.cache.filter(role => !role.managed);
         const roleOptions = roles.map(role => ({
             label: role.name,
             value: role.id
         }));
 
-        // 4️⃣ 컴포넌트 생성
+        // 3️⃣ 컴포넌트 생성
         const row1 = new ActionRowBuilder().addComponents(
             new StringSelectMenuBuilder()
                 .setCustomId('알림_채널_선택')
-                .setPlaceholder('알림을 받을 채널을 선택하세요')
+                .setPlaceholder('🔔 알림을 보낼 채널을 선택하세요')
                 .addOptions(channelOptions)
         );
 
         const row2 = new ActionRowBuilder().addComponents(
             new StringSelectMenuBuilder()
-                .setCustomId('알림_종류_선택')
-                .setPlaceholder('알림 종류를 선택하세요')
-                .addOptions(notificationTypes)
-        );
-
-        const row3 = new ActionRowBuilder().addComponents(
-            new StringSelectMenuBuilder()
                 .setCustomId('알림_역할_선택')
-                .setPlaceholder('역할을 선택하세요')
+                .setPlaceholder('👥 역할을 선택하세요')
                 .addOptions(roleOptions)
         );
 
-        const row4 = new ActionRowBuilder().addComponents(
+        const row3 = new ActionRowBuilder().addComponents(
             new ButtonBuilder()
                 .setCustomId('알림_설정_완료')
                 .setLabel('설정 완료')
@@ -60,11 +47,11 @@ export async function execute(interaction) {
 
         // 기존 메시지 수정
         await interaction.editReply({
-            content: '🔧 설정을 시작합니다.',
-            components: [row1, row2, row3, row4]
+            content: '🔧 알림 설정을 시작합니다.',
+            components: [row1, row2, row3]
         });
 
-        console.log('✅ 설정 메뉴 수정 성공');
+        console.log('✅ 알림 설정 메뉴 전송 성공');
 
     } catch (error) {
         console.error('📛 설정 중 오류 발생:', error);
