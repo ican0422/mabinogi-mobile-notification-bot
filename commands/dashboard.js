@@ -1,27 +1,27 @@
-import { SlashCommandBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } from 'discord.js';
+// commands/dashboard.js
+import { SlashCommandBuilder, ButtonStyle } from 'discord.js';
+import { createButtonRow } from '../utils/messageComponents.js';
 
 export const data = new SlashCommandBuilder()
     .setName('대시보드')
     .setDescription('알림 설정을 시작합니다.');
 
 export async function execute(interaction) {
-    const row = new ActionRowBuilder().addComponents(
-        new ButtonBuilder()
-            .setCustomId('알림설정')
-            .setLabel('알림 설정')
-            .setStyle(ButtonStyle.Primary),
-        new ButtonBuilder()
-            .setCustomId('결계알림채널')
-            .setLabel('결계 알림 채널')
-            .setStyle(ButtonStyle.Secondary)
-    );
+    try {
+        // 가로로 버튼 배치
+        const buttonRow = createButtonRow([
+            { customId: '알림설정', label: '알림 설정', style: ButtonStyle.Primary },
+            { customId: '결계알림채널', label: '결계 알림 채널', style: ButtonStyle.Secondary }
+        ]);
 
-    // 기존 메시지를 수정하는 방식
-    const message = await interaction.reply({
-        content: '🔧 대시보드 설정 메뉴',
-        components: [row],
-        flags: 0  // 비공개 메시지가 아닌 일반 메시지
-    });
+        await interaction.reply({
+            content: '🔧 대시보드 설정 메뉴',
+            components: [buttonRow],
+            flags: 0  // 수정 가능 여부에 따라 설정
+        });
 
-    console.log('✅ 대시보드 메시지 전송 성공:', message.id);
+        console.log('✅ 대시보드 메시지 전송 성공');
+    } catch (error) {
+        console.error('📛 대시보드 메시지 전송 중 오류 발생:', error);
+    }
 }
