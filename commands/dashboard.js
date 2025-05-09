@@ -7,9 +7,13 @@ export const data = new SlashCommandBuilder()
 export async function execute(interaction) {
     const row = new ActionRowBuilder().addComponents(
         new ButtonBuilder()
-            .setCustomId('알림설정')  // 여기 수정
-            .setLabel('설정')
-            .setStyle(ButtonStyle.Primary)
+            .setCustomId('알림설정')
+            .setLabel('알림 설정')
+            .setStyle(ButtonStyle.Primary),
+        new ButtonBuilder()
+            .setCustomId('결계알림채널')
+            .setLabel('결계 알림 채널')
+            .setStyle(ButtonStyle.Secondary)
     );
 
     // 기존 메시지를 수정하는 방식
@@ -18,9 +22,6 @@ export async function execute(interaction) {
         components: [row],
         flags: 0  // 비공개 메시지가 아닌 일반 메시지
     });
-
-    // 메시지 ID 저장
-    interaction.client.dashboardMessageId = message.id;
 
     console.log('✅ 대시보드 메시지 전송 성공:', message.id);
 }
